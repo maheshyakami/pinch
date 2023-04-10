@@ -15,6 +15,9 @@ struct ContentView: View {
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawerOpen: Bool = false
     
+    let pages: [Page] = pagesData
+    @State private var pageIndex: Int = 1
+    
     // MARK: - FUNCTION
     func resetImageState() {
         return withAnimation(.spring()) {
@@ -22,6 +25,10 @@ struct ContentView: View {
             imageOffset = .zero
             
         }
+    }
+    
+    func currentPage() -> String {
+        return pages[pageIndex - 1].imageName
     }
     
     
@@ -32,7 +39,7 @@ struct ContentView: View {
                 Color.clear
                 
                 // MARK: - Page Image
-                Image("magazine-front-cover")
+                Image(currentPage())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(10)
@@ -56,7 +63,7 @@ struct ContentView: View {
                     .gesture(
                         DragGesture()
                             .onChanged({ value in
-                                withAnimation(.linear(duration: 1)) {
+                                withAnimation(.linear(duration: 0.5)) {
                                     imageOffset = value.translation
                                 }
                             })
@@ -160,7 +167,7 @@ struct ContentView: View {
             .overlay(alignment: .topTrailing) {
                 HStack(spacing: 12) {
                     // MARK: Drawer Handle
-                    Image(systemName: !isDrawerOpen ? "chevron.compact.left" : "chevron.compact.right")
+                    Image(systemName: isDrawerOpen ? "chevron.compact.right" : "chevron.compact.left")
                         .resizable()
                         .scaledToFit()
                         .frame( height: 40)
@@ -172,7 +179,20 @@ struct ContentView: View {
                             }
                         }
                     // MARK: Thumbnails
-                    
+                    ForEach(pages) { page in
+                        Image(page.thumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .opacity(isDrawerOpen ? 1 : 0)
+                            .animation(.easeIn(duration: 0.3), value: isDrawerOpen)
+                            .onTapGesture {
+                                isAnimating = true
+                                pageIndex = page.id
+                            }
+                    }
                     Spacer()
                 }
                 .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
