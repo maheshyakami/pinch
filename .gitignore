@@ -99,3 +99,4 @@ fastlane/.env.default
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+Pinch.xcodeproj/project.xcworkspace/xcuserdata
